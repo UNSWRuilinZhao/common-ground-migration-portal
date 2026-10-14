@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Our approach · Common Ground Migration{% endblock %}
+{% block body_class %}public-page{% endblock %}
+{% block content %}
+<section class="inner-hero about-hero">
+    <div class="shell inner-hero-grid"><div><p class="eyebrow">Our approach</p><h1>Careful with the details.<br><em>Human in the process.</em></h1></div><p>A good migration service should leave you more informed, not more dependent. We combine structured case preparation with communication you can understand.</p></div>
+</section>
+
+<section class="story-section section shell">
+    <div class="story-photo"><img src="{% static 'images/advisor-mei.webp' %}" alt="Adviser Mei Lin seated in a bright office"></div>
+    <div class="story-copy"><p class="eyebrow">A fictional practice, a real workflow</p><h2>Designed around clarity and care.</h2><p>Common Ground Migration is the demonstration brand for this working software project. Its service philosophy is intentionally simple: listen closely, give realistic guidance, prepare methodically and keep clients informed.</p><p>The portal turns that philosophy into visible case stages, document checklists, key dates and a private conversation with the advisory team.</p><div class="value-grid"><article><strong>Clear</strong><span>Plain language and visible next actions</span></article><article><strong>Considered</strong><span>Advice grounded in individual facts</span></article><article><strong>Connected</strong><span>One shared place for case progress</span></article></div></div>
+</section>
+
+<section class="principles section">
+    <div class="shell"><div class="section-heading centered"><p class="eyebrow">Our working principles</p><h2>What good support<br><em>should feel like.</em></h2></div><div class="principle-grid"><article><span>01</span><h3>You know what happens next</h3><p>Every active case can show a current stage, key date and practical next action.</p></article><article><span>02</span><h3>Questions have one home</h3><p>Client and adviser messages stay attached to the case rather than scattered across channels.</p></article><article><span>03</span><h3>Documents have a status</h3><p>A shared checklist shows what is requested, received, under review or accepted.</p></article></div></div>
+</section>
+
+<section class="team-note section shell"><div><p class="eyebrow">Professional details</p><h2>Before this becomes a live practice website</h2></div><p>Replace the demonstration adviser profile, email address and business details with verified information. Any registered migration agent details should be checked against the current official register before publication.</p></section>
+
+<section class="closing-cta shell"><div><p class="eyebrow light">Your story comes first</p><h2>Tell us what you are working towards.</h2></div><a class="button button-coral" href="{% url 'consultation' %}">Request a consultation</a></section>
+{% endblock %}

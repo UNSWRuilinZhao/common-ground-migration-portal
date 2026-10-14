@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Visa pathways · Common Ground Migration{% endblock %}
+{% block body_class %}public-page{% endblock %}
+{% block content %}
+<section class="inner-hero">
+    <div class="shell inner-hero-grid">
+        <div><p class="eyebrow">Visa pathways</p><h1>A pathway begins with <em>your circumstances.</em></h1></div>
+        <p>There is no useful one-size-fits-all answer. We help you understand the options that may fit, the evidence each requires and the practical next step.</p>
+    </div>
+</section>
+
+<section class="service-list section shell">
+    <article class="service-row" id="skilled"><span class="service-number">01</span><div><p class="eyebrow">Skills & experience</p><h2>Skilled migration</h2><p>For professionals exploring points-tested, state or territory nominated pathways. A strong plan starts with occupation fit, skills assessment, points, English requirements and realistic invitation prospects.</p><ul class="plain-list"><li>Initial eligibility and points review</li><li>Skills assessment planning</li><li>Expression of interest and nomination strategy</li><li>Application preparation and evidence review</li></ul></div><a class="text-link" href="{% url 'consultation' %}">Discuss your profile <span>→</span></a></article>
+    <article class="service-row" id="employer"><span class="service-number">02</span><div><p class="eyebrow">Businesses & talent</p><h2>Employer sponsored</h2><p>For employers seeking to retain skilled people and workers considering a sponsored role. We keep the business, nomination and visa pieces connected.</p><ul class="plain-list"><li>Sponsor and position overview</li><li>Nomination and labour market evidence</li><li>Temporary and permanent pathway planning</li><li>Coordinated employer and employee checklists</li></ul></div><a class="text-link" href="{% url 'consultation' %}">Talk about sponsorship <span>→</span></a></article>
+    <article class="service-row" id="family"><span class="service-number">03</span><div><p class="eyebrow">Life together</p><h2>Partner & family</h2><p>Relationship applications are personal and evidence-heavy. We help organise the story, documents and timing without losing sight of the people involved.</p><ul class="plain-list"><li>Partner pathway and timing review</li><li>Relationship evidence framework</li><li>Applicant and sponsor preparation</li><li>Clear follow-up and milestone tracking</li></ul></div><a class="text-link" href="{% url 'consultation' %}">Start a private conversation <span>→</span></a></article>
+    <article class="service-row" id="student"><span class="service-number">04</span><div><p class="eyebrow">Study & beyond</p><h2>Student & graduate</h2><p>Study choices can shape later options. We look at the immediate application alongside graduate pathways, work rights and longer-term goals.</p><ul class="plain-list"><li>Study and visa planning context</li><li>Genuine student preparation</li><li>Graduate visa transition</li><li>Future skilled or employer pathway review</li></ul></div><a class="text-link" href="{% url 'consultation' %}">Explore your next step <span>→</span></a></article>
+</section>
+
+<section class="expect-panel section">
+    <div class="shell expect-grid"><div><p class="eyebrow light">What to expect</p><h2>Honest advice before paperwork.</h2></div><div class="expect-points"><p><span>01</span><span><strong>We listen first.</strong> Your history, priorities and deadlines shape the discussion.</span></p><p><span>02</span><span><strong>We explain trade-offs.</strong> You receive a practical view of eligibility, evidence, risk and timing.</span></p><p><span>03</span><span><strong>You choose the next step.</strong> No pressure and no promise of a particular outcome.</span></p></div></div>
+</section>
+
+<section class="closing-cta shell"><div><p class="eyebrow light">Not sure which pathway fits?</p><h2>That is a good reason to start with a conversation.</h2></div><a class="button button-coral" href="{% url 'consultation' %}">Request a consultation</a></section>
+{% endblock %}

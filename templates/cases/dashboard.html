@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if user.is_staff %}Practice workspace{% else %}My cases{% endif %} · Common Ground Migration{% endblock %}
+{% block body_class %}portal-page{% endblock %}
+{% block content %}
+<section class="dashboard shell">
+    <div class="page-head">
+        <div><p class="eyebrow">{% if user.is_staff %}Practice workspace{% else %}Private client portal{% endif %}</p><h1>Good to see you{% if user.first_name %}, {{ user.first_name }}{% endif %}.</h1><p>{% if user.is_staff %}Review enquiries, coordinate cases and keep every next action visible.{% else %}Follow your progress, review requested documents and keep in touch with your adviser.{% endif %}</p></div>
+        {% if user.is_staff %}<a class="button" href="{% url 'case_create' %}">+ Create a case</a>{% else %}<a class="button" href="{% url 'consultation' %}">Ask about a new matter</a>{% endif %}
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat-card"><span>All cases</span><strong>{{ stats.total }}</strong><i class="stat-accent sage"></i></div>
+        <div class="stat-card"><span>Active</span><strong>{{ stats.active }}</strong><i class="stat-accent coral"></i></div>
+        <div class="stat-card"><span>Preparing</span><strong>{{ stats.preparing }}</strong><i class="stat-accent sand"></i></div>
+        <div class="stat-card"><span>Lodged / waiting</span><strong>{{ stats.lodged }}</strong><i class="stat-accent green"></i></div>
+    </div>
+
+    {% if user.is_staff and new_enquiries %}
+    <section class="enquiry-strip"><div><p class="eyebrow">New consultation enquiries</p><h2>People waiting for a first response</h2></div><div class="enquiry-list">{% for enquiry in new_enquiries %}<article><strong>{{ enquiry.name }}</strong><span>{{ enquiry.get_visa_interest_display }}</span><small>{{ enquiry.created_at|date:"j M, g:i a" }}</small></article>{% endfor %}</div><a href="{% url 'admin:tickets_consultationrequest_changelist' %}" class="text-link">Manage enquiries →</a></section>
+    {% endif %}
+
+    <section class="queue-card">
+        <div class="queue-head"><div><p class="eyebrow">Case workspace</p><h2>{% if user.is_staff %}All client cases{% else %}Your cases{% endif %}</h2></div><form class="filters" method="get"><input type="search" name="q" value="{{ query }}" placeholder="Search cases" aria-label="Search cases"><select name="stage" aria-label="Filter by stage"><option value="">All stages</option>{% for value, label in stage_choices %}<option value="{{ value }}" {% if selected_stage == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><select name="visa_type" aria-label="Filter by visa type"><option value="">All pathways</option>{% for value, label in visa_type_choices %}<option value="{{ value }}" {% if selected_visa_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="button button-secondary button-small" type="submit">Filter</button></form></div>
+        {% if cases %}
+        <div class="case-grid">{% for case in cases %}<a class="case-card" href="{{ case.get_absolute_url }}"><div class="case-card-top"><span class="case-ref">{{ case.reference }}</span><span class="badge stage-{{ case.stage }}">{{ case.get_stage_display }}</span></div><h3>{{ case.title }}</h3><p>{{ case.get_visa_type_display }}{% if user.is_staff %} · {{ case.client.first_name|default:case.client.username }}{% endif %}</p><div class="case-progress"><span style="width: {{ case.progress_percent }}%"></span></div><div class="case-card-foot"><span>{% if case.next_action %}Next: {{ case.next_action|truncatechars:52 }}{% else %}No next action recorded{% endif %}</span><b>→</b></div></a>{% endfor %}</div>
+        {% else %}
+        <div class="empty-state"><span>⌁</span><h3>No cases found</h3><p>{% if query or selected_stage or selected_visa_type %}Try clearing your filters.{% elif user.is_staff %}Create a case once a client is ready to proceed.{% else %}When an adviser opens a case for you, its progress will appear here.{% endif %}</p>{% if user.is_staff %}<a href="{% url 'case_create' %}" class="button button-secondary">Create a case</a>{% else %}<a href="{% url 'consultation' %}" class="button button-secondary">Request a consultation</a>{% endif %}</div>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Request a consultation · Common Ground Migration{% endblock %}
+{% block content %}
+<section class="form-page warm-form-page">
+    <div class="shell form-page-grid">
+        <div class="form-page-intro"><p class="eyebrow">Start with a conversation</p><h1>Tell us where you are now.</h1><p>Share enough context for us to understand what you would like to discuss. Submitting this form does not create an adviser–client relationship.</p><div class="consult-steps"><p><span>1</span> We review your enquiry</p><p><span>2</span> We contact you about suitability and availability</p><p><span>3</span> You decide whether to book</p></div></div>
+        <div class="form-card form-card-wide"><div class="form-heading"><p>Consultation request</p><h2>Your details</h2></div><form method="post" novalidate>{% csrf_token %}<div class="form-honeypot" aria-hidden="true"><label for="id_website">Leave this field empty</label><input id="id_website" name="website" type="text" tabindex="-1" autocomplete="off"></div>{% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}<div class="field{% if field.field.widget.input_type == 'checkbox' %} checkbox-field{% endif %}">{% if field.field.widget.input_type == 'checkbox' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}{% if field.help_text %}<div class="help-text">{{ field.help_text|safe }}</div>{% endif %}{% if field.errors %}<div class="field-error">{{ field.errors|striptags }}</div>{% endif %}</div>{% endfor %}<button class="button button-full" type="submit">Send consultation request</button><p class="privacy-note">Portfolio demo: please do not submit sensitive personal documents or confidential information.</p></form></div>
+    </div>
+</section>
+{% endblock %}

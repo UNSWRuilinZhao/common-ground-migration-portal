@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Verify your email · Common Ground Migration{% endblock %}
+{% block content %}
+<section class="auth-layout shell">
+    <div class="auth-intro"><p class="eyebrow">One last step</p><h1>Check your inbox.</h1><p>We sent a six-digit verification code to <strong>{{ email }}</strong>. It expires in 10 minutes.</p><ul class="check-list"><li>The code can only be used once</li><li>Five attempts are allowed per code</li><li>A new code replaces the previous one</li></ul></div>
+    <div class="form-card verification-card"><div class="form-heading"><p>Email verification</p><h2>Enter your code</h2></div><form method="post" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}<div class="field verification-field"><label for="{{ form.code.id_for_label }}">{{ form.code.label }}</label>{{ form.code }}{% if form.code.errors %}<div class="field-error">{{ form.code.errors|striptags }}</div>{% endif %}</div><button class="button button-full" type="submit">Verify email</button></form><form class="resend-form" method="post" action="{% url 'resend_verification' %}">{% csrf_token %}<span>Didn't receive it?</span><button class="button-link" type="submit">Send a new code</button></form></div>
+</section>
+{% endblock %}

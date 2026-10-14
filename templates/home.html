@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Common Ground Migration · Your next chapter in Australia{% endblock %}
+{% block body_class %}public-page{% endblock %}
+{% block content %}
+<section class="home-hero">
+    <div class="shell hero-grid">
+        <div class="hero-copy">
+            <p class="eyebrow">Migration guidance, made human</p>
+            <h1>Build your future in <em>Australia.</em></h1>
+            <p class="hero-lead">From the first question to the final decision, we help you understand your options, prepare carefully and move forward with confidence.</p>
+            <div class="hero-actions">
+                <a class="button" href="{% url 'consultation' %}">Start with a conversation</a>
+                <a class="text-link" href="{% url 'services' %}">Explore visa pathways <span>↗</span></a>
+            </div>
+            <div class="hero-promises" aria-label="What to expect">
+                <span><i>01</i> Plain-English guidance</span>
+                <span><i>02</i> A plan built around you</span>
+                <span><i>03</i> Progress visible online</span>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <img src="{% static 'images/hero-harbour.webp' %}" alt="Friends walking beside Sydney Harbour in the afternoon">
+            <div class="hero-note">
+                <span class="note-icon">✓</span>
+                <div><small>Your next step</small><strong>Made clear and manageable</strong></div>
+            </div>
+            <div class="sun-shape" aria-hidden="true"></div>
+        </div>
+    </div>
+</section>
+
+<section class="pathways section shell" id="pathways">
+    <div class="section-heading split-heading">
+        <div><p class="eyebrow">Find your pathway</p><h2>Different journeys.<br><em>One clear place to begin.</em></h2></div>
+        <p>Migration rules can feel complex. We start by listening to your circumstances, then explain the realistic pathways worth exploring.</p>
+    </div>
+    <div class="pathway-grid">
+        <a class="pathway-card coral-card" href="{% url 'services' %}#skilled"><span class="line-icon">↗</span><small>Work & skills</small><h3>Skilled migration</h3><p>Explore points-tested and state-nominated pathways that align with your experience.</p><b>Learn more →</b></a>
+        <a class="pathway-card sage-card" href="{% url 'services' %}#employer"><span class="line-icon">⌁</span><small>Sponsored</small><h3>Employer sponsored</h3><p>Support for businesses and skilled workers navigating sponsorship together.</p><b>Learn more →</b></a>
+        <a class="pathway-card sand-card" href="{% url 'services' %}#family"><span class="line-icon">♡</span><small>Relationships</small><h3>Partner & family</h3><p>Careful guidance through evidence, timelines and the personal details that matter.</p><b>Learn more →</b></a>
+        <a class="pathway-card cream-card" href="{% url 'services' %}#student"><span class="line-icon">◇</span><small>Study & next steps</small><h3>Student & graduate</h3><p>Plan study, graduate and longer-term options with your future in view.</p><b>Learn more →</b></a>
+    </div>
+</section>
+
+<section class="journey section">
+    <div class="shell">
+        <div class="section-heading centered"><p class="eyebrow light">How we work</p><h2>A thoughtful process,<br><em>from uncertainty to progress.</em></h2></div>
+        <div class="journey-steps">
+            <article><span>01</span><h3>Talk</h3><p>Tell us where you are now and where you hope to go.</p></article>
+            <article><span>02</span><h3>Plan</h3><p>Understand viable pathways, risks, timing and costs.</p></article>
+            <article><span>03</span><h3>Prepare</h3><p>Build your evidence and application with a clear checklist.</p></article>
+            <article><span>04</span><h3>Progress</h3><p>Follow milestones and stay in touch through your portal.</p></article>
+        </div>
+    </div>
+</section>
+
+<section class="adviser-section section shell">
+    <div class="adviser-photo"><img src="{% static 'images/advisor-mei.webp' %}" alt="Migration adviser Mei Lin in a warm, bright office"><span class="photo-caption">Meet the people behind your plan</span></div>
+    <div class="adviser-copy">
+        <p class="eyebrow">Advice with empathy</p>
+        <h2>You are more than a case number.</h2>
+        <p>Migration decisions affect careers, relationships and whole families. Our approach pairs careful preparation with honest, human communication.</p>
+        <blockquote>“Our role is to make the path understandable—especially when the answer is not simple.”</blockquote>
+        <p class="adviser-name"><strong>Mei Lin</strong><span>Principal adviser · demonstration profile</span></p>
+        <a class="text-link" href="{% url 'about' %}">Meet our team and approach <span>→</span></a>
+    </div>
+</section>
+
+<section class="guides-preview section">
+    <div class="shell">
+        <div class="section-heading split-heading"><div><p class="eyebrow">Useful, not overwhelming</p><h2>Practical guides for<br><em>the road ahead.</em></h2></div><a class="text-link" href="{% url 'guides' %}">View all guides <span>→</span></a></div>
+        <div class="guide-grid">
+            <article class="guide-card"><img src="{% static 'images/guide-new-start.webp' %}" alt="A new resident looking across Sydney from her apartment"><div><small>Settling in · 7 min read</small><h3>Your first 30 days in Australia</h3><p>A calm checklist for the practical tasks that make a new city feel manageable.</p><a href="{% url 'guides' %}">Read the guide →</a></div></article>
+            <article class="guide-card"><img src="{% static 'images/guide-family.webp' %}" alt="A family sharing a picnic in an Australian park"><div><small>Partner & family · 6 min read</small><h3>Preparing relationship evidence</h3><p>How to organise a clear, genuine picture of your shared life.</p><a href="{% url 'guides' %}">Read the guide →</a></div></article>
+        </div>
+    </div>
+</section>
+
+<section class="closing-cta shell">
+    <div><p class="eyebrow light">Ready when you are</p><h2>Let’s make your next step clearer.</h2><p>Share a little about your plans and we will explain what a first conversation could cover.</p></div>
+    <a class="button button-coral" href="{% url 'consultation' %}">Request a consultation</a>
+</section>
+{% endblock %}

@@ -1,0 +1,14 @@
+A new consultation request has been saved in the practice inbox.
+
+Reference: {{ reference }}
+Name: {{ enquiry.name }}
+Email: {{ enquiry.email }}
+Location: {{ enquiry.location|default:"Not provided" }}
+Area of interest: {{ enquiry.get_visa_interest_display }}
+Preferred contact: {{ enquiry.get_preferred_contact_display }}
+Submitted: {{ enquiry.created_at|date:"j M Y, g:i a T" }}
+
+Review the complete enquiry securely in the staff administration:
+{{ admin_url }}
+
+This notification contains only a summary. Use the staff administration to view the full enquiry.

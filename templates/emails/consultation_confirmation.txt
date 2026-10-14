@@ -1,0 +1,13 @@
+Hi {{ enquiry.name }},
+
+Thank you for contacting Common Ground Migration. We have received your consultation request and will review it before getting in touch.
+
+Reference: {{ reference }}
+Area of interest: {{ enquiry.get_visa_interest_display }}
+Preferred contact: {{ enquiry.get_preferred_contact_display }}
+
+Please keep this reference for your records. Submitting an enquiry does not create an adviser-client relationship, and no outcome is guaranteed.
+
+If you did not submit this request, please reply to this email and let us know.
+
+Common Ground Migration

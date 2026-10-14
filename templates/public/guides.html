@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Practical guides · Common Ground Migration{% endblock %}
+{% block body_class %}public-page{% endblock %}
+{% block content %}
+<section class="inner-hero guides-hero"><div class="shell inner-hero-grid"><div><p class="eyebrow">Practical guides</p><h1>Useful context for<br><em>the road ahead.</em></h1></div><p>Short, readable starting points for common questions. These guides are general information—not advice for an individual application.</p></div></section>
+
+<section class="guide-library section shell">
+    <article class="feature-guide"><img src="{% static 'images/guide-new-start.webp' %}" alt="A new resident looking over Sydney from her apartment"><div><p class="eyebrow">Settling in · 7 min read</p><h2>Your first 30 days in Australia</h2><p>A practical sequence for identity, banking, health, housing, transport and the small routines that help a new city begin to feel familiar.</p><span class="coming-label">Editorial preview</span></div></article>
+    <div class="article-grid">
+        <article><img src="{% static 'images/guide-family.webp' %}" alt="A family relaxing together in a park"><div><small>Partner & family</small><h3>Preparing relationship evidence</h3><p>Think in timelines, shared responsibilities and a clear picture of everyday life.</p><span>6 min read</span></div></article>
+        <article class="text-article coral-card"><div><small>Skilled migration</small><h3>What belongs in an initial points review?</h3><p>Age, English, work history, qualifications and nomination are connected—but not interchangeable.</p><span>5 min read</span></div></article>
+        <article class="text-article sage-card"><div><small>Case preparation</small><h3>A calmer way to organise documents</h3><p>Use names, dates and status labels consistently so missing evidence becomes visible early.</p><span>4 min read</span></div></article>
+    </div>
+    <div class="info-note"><strong>Important</strong><p>These demonstration articles provide general context only. Migration rules and individual circumstances change; obtain current professional advice before acting.</p></div>
+</section>
+
+<section class="closing-cta shell"><div><p class="eyebrow light">Need an answer about your circumstances?</p><h2>General information is only the beginning.</h2></div><a class="button button-coral" href="{% url 'consultation' %}">Talk to an adviser</a></section>
+{% endblock %}
