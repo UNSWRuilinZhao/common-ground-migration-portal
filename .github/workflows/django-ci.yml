@@ -18,7 +18,7 @@ jobs:
       DEBUG: "True"
       SECRET_KEY: ci-only-secret-key
       EMAIL_BACKEND: django.core.mail.backends.locmem.EmailBackend
-      CACHE_LOCATION: ${{ runner.temp }}/common-ground-cache
+      CACHE_LOCATION: /tmp/common-ground-cache
 
     steps:
       - name: Check out repository
