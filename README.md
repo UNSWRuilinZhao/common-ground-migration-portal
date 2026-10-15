@@ -1,5 +1,7 @@
 # Common Ground Migration
 
+[![Django CI](https://github.com/UNSWRuilinZhao/common-ground-migration-portal/actions/workflows/django-ci.yml/badge.svg)](https://github.com/UNSWRuilinZhao/common-ground-migration-portal/actions/workflows/django-ci.yml)
+
 > [!IMPORTANT]
 > **Portfolio demonstration only.** Common Ground Migration is a fictional service created to demonstrate full-stack software engineering. It is not a migration practice, does not provide legal or migration advice, and must not be used to make migration decisions.
 
@@ -36,6 +38,20 @@ Gunicorn → Django application ──→ SMTP provider
    ▼
 PostgreSQL persistent volume
 ```
+
+## Screenshots
+
+### Public website
+
+![Common Ground Migration public home page](docs/screenshots/home.png)
+
+### Client portal
+
+![Client case portal](docs/screenshots/client-portal.png)
+
+### Staff workspace
+
+![Staff case management workspace](docs/screenshots/staff-workspace.png)
 
 ## What is included
 
@@ -77,12 +93,35 @@ The Django application directory remains named `tickets` so the original databas
 - WhiteNoise for static files
 - Gunicorn and Docker for deployment
 
-## Run locally on Windows
+## Run locally
+
+Clone the repository and create an isolated Python environment:
+
+```bash
+git clone https://github.com/UNSWRuilinZhao/common-ground-migration-portal.git
+cd common-ground-migration-portal
+python -m venv .venv
+```
+
+Activate the environment on Windows PowerShell:
 
 ```powershell
-cd "C:\Users\84783\Documents\New project\flowdesk"
-.\.venv\Scripts\python.exe manage.py migrate
-.\.venv\Scripts\python.exe manage.py runserver
+.\.venv\Scripts\Activate.ps1
+```
+
+On macOS or Linux, activate it with:
+
+```bash
+source .venv/bin/activate
+```
+
+Install the dependencies and start the application:
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 ```
 
 Open `http://127.0.0.1:8000/`. The admin site is at `http://127.0.0.1:8000/admin/` and the portal is at `http://127.0.0.1:8000/portal/`.
