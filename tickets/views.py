@@ -44,6 +44,7 @@ from .security import email_delivery_rate_limited, rate_limit_exceeded
 
 logger = logging.getLogger(__name__)
 PENDING_USER_SESSION_KEY = "pending_verification_user_id"
+CONSULTATION_RECEIPT_SESSION_KEY = "consultation_submission_receipt"
 
 
 def home(request):
@@ -63,6 +64,9 @@ def guides(request):
 
 
 def consultation(request):
+    if request.method == "GET":
+        request.session.pop(CONSULTATION_RECEIPT_SESSION_KEY, None)
+
     initial = {}
     if request.user.is_authenticated:
         initial = {
@@ -72,7 +76,7 @@ def consultation(request):
     form = ConsultationForm(request.POST or None, initial=initial)
     if request.method == "POST" and request.POST.get("website", "").strip():
         logger.warning("Consultation honeypot rejected an automated submission.")
-        return redirect("consultation_thanks")
+        return redirect("home")
 
     consultation_limited = False
     if request.method == "POST":
@@ -101,8 +105,12 @@ def consultation(request):
     if request.method == "POST" and not consultation_limited and form.is_valid():
         enquiry = form.save()
         email_failures = []
+        confirmation_sent = False
+        staff_notified = False
         try:
-            send_consultation_confirmation_email(enquiry)
+            confirmation_sent = bool(send_consultation_confirmation_email(enquiry))
+            if not confirmation_sent:
+                email_failures.append("confirmation")
         except Exception:
             email_failures.append("confirmation")
             logger.exception(
@@ -116,7 +124,11 @@ def consultation(request):
                     args=[enquiry.pk],
                 )
             )
-            send_consultation_staff_notification(enquiry, admin_url)
+            staff_notified = bool(
+                send_consultation_staff_notification(enquiry, admin_url)
+            )
+            if not staff_notified:
+                email_failures.append("staff notification")
         except Exception:
             email_failures.append("staff notification")
             logger.exception(
@@ -134,12 +146,19 @@ def consultation(request):
                 request,
                 "Your request was received and a confirmation email has been sent.",
             )
+        request.session[CONSULTATION_RECEIPT_SESSION_KEY] = {
+            "confirmation_sent": confirmation_sent,
+            "staff_notified": staff_notified,
+        }
         return redirect("consultation_thanks")
     return render(request, "public/consultation.html", {"form": form})
 
 
 def consultation_thanks(request):
-    return render(request, "public/consultation_thanks.html")
+    receipt = request.session.get(CONSULTATION_RECEIPT_SESSION_KEY)
+    if not receipt:
+        return redirect("consultation")
+    return render(request, "public/consultation_thanks.html", receipt)
 
 
 def signup(request):

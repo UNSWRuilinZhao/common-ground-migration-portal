@@ -1,0 +1,255 @@
+Common Ground Migration 项目——正式服务器同步部署说明
+====================================================
+
+适用环境：Windows PowerShell
+本地项目：C:\Users\84783\Documents\New project\flowdesk
+服务器：ubuntu@165.154.203.178
+服务器项目：/opt/flowdesk
+正式网站：https://commongroundmigration.duckdns.org/
+
+
+一、重要安全提醒
+----------------
+
+1. 不要上传以下内容到 GitHub：
+
+   .env
+   db.sqlite3
+   PostgreSQL 数据库备份
+   .deploy 文件夹中的 SSH 私钥
+   Gmail 应用专用密码或其他授权码
+
+2. 不要在正式服务器运行下面的指令：
+
+   docker compose down -v
+
+   参数 -v 会删除 PostgreSQL 数据卷，可能造成正式数据丢失。
+
+3. 部署代码一般不需要停止 PostgreSQL，也不需要删除服务器。
+
+4. 先测试、再构建、最后切换正式 Web 容器。
+
+
+二、进入本地项目目录
+--------------------
+
+打开 Windows PowerShell：
+
+cd "C:\Users\84783\Documents\New project\flowdesk"
+
+
+三、部署前本地检查
+------------------
+
+运行全部 Django 测试：
+
+.\.venv\Scripts\python.exe manage.py test
+
+检查 Git 差异中是否存在格式错误：
+
+git diff --check
+
+查看这次修改了哪些文件：
+
+git status --short
+
+只有在测试全部通过后才继续部署。
+
+
+四、连接服务器并检查状态
+------------------------
+
+使用项目专用 SSH 密钥连接：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178
+
+进入服务器后查看容器：
+
+cd /opt/flowdesk
+sudo docker compose ps
+
+正常情况下应看到：
+
+flowdesk-db-1    running / healthy
+flowdesk-web-1   running
+
+退出服务器：
+
+exit
+
+也可以在本地 PowerShell 直接运行远程检查：
+
+ssh -i ".deploy\flowdesk_deploy_key" -o BatchMode=yes ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose ps"
+
+
+五、设置本次部署编号
+--------------------
+
+在本地 PowerShell 中运行：
+
+$DeployId = Get-Date -Format "yyyyMMdd-HHmmss"
+
+查看生成的编号：
+
+$DeployId
+
+后续备份和上传目录都会使用这个编号，避免覆盖以前的备份。
+
+
+六、建立临时上传目录和代码备份
+------------------------------
+
+以下示例用于同步这次感谢页面修复涉及的三个文件：
+
+- tickets/views.py
+- tickets/tests.py
+- templates/public/consultation_thanks.html
+
+创建服务器临时目录和备份目录：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "mkdir -p /home/ubuntu/flowdesk-upload-$DeployId/tickets /home/ubuntu/flowdesk-upload-$DeployId/templates/public /home/ubuntu/flowdesk-backup-$DeployId/tickets /home/ubuntu/flowdesk-backup-$DeployId/templates/public"
+
+备份服务器现有代码：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "sudo cp /opt/flowdesk/tickets/views.py /home/ubuntu/flowdesk-backup-$DeployId/tickets/views.py && sudo cp /opt/flowdesk/tickets/tests.py /home/ubuntu/flowdesk-backup-$DeployId/tickets/tests.py && sudo cp /opt/flowdesk/templates/public/consultation_thanks.html /home/ubuntu/flowdesk-backup-$DeployId/templates/public/consultation_thanks.html && sudo chown -R ubuntu:ubuntu /home/ubuntu/flowdesk-backup-$DeployId"
+
+
+七、建议：部署前备份 PostgreSQL
+------------------------------
+
+如果部署包含模型或数据库迁移，强烈建议备份数据库：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose exec -T db pg_dump -U flowdesk -d flowdesk > /home/ubuntu/flowdesk-db-$DeployId.sql && chmod 600 /home/ubuntu/flowdesk-db-$DeployId.sql"
+
+这个备份可能包含用户资料，不要上传到 GitHub，也不要发送给其他人。
+
+
+八、上传修改文件
+----------------
+
+scp -i ".deploy\flowdesk_deploy_key" "tickets\views.py" "ubuntu@165.154.203.178:/home/ubuntu/flowdesk-upload-$DeployId/tickets/views.py"
+
+scp -i ".deploy\flowdesk_deploy_key" "tickets\tests.py" "ubuntu@165.154.203.178:/home/ubuntu/flowdesk-upload-$DeployId/tickets/tests.py"
+
+scp -i ".deploy\flowdesk_deploy_key" "templates\public\consultation_thanks.html" "ubuntu@165.154.203.178:/home/ubuntu/flowdesk-upload-$DeployId/templates/public/consultation_thanks.html"
+
+
+九、把上传文件安装到服务器项目
+------------------------------
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "sudo install -m 0644 /home/ubuntu/flowdesk-upload-$DeployId/tickets/views.py /opt/flowdesk/tickets/views.py && sudo install -m 0644 /home/ubuntu/flowdesk-upload-$DeployId/tickets/tests.py /opt/flowdesk/tickets/tests.py && sudo install -m 0644 /home/ubuntu/flowdesk-upload-$DeployId/templates/public/consultation_thanks.html /opt/flowdesk/templates/public/consultation_thanks.html"
+
+此时服务器项目源文件已经更新，但正在运行的正式 Web 容器还没有切换。
+
+
+十、构建新的 Web 镜像
+--------------------
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose build web"
+
+构建期间旧的正式 Web 容器会继续运行。
+
+
+十一、在新镜像内运行测试
+------------------------
+
+正式环境启用了强制 HTTPS。运行 Django 测试时必须临时关闭 HTTPS 跳转，
+并使用内存邮件后端，否则测试客户端会收到 301，或向真实邮箱发送测试邮件。
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose run --rm -e SECURE_SSL_REDIRECT=False -e SESSION_COOKIE_SECURE=False -e CSRF_COOKIE_SECURE=False -e EMAIL_BACKEND=django.core.mail.backends.locmem.EmailBackend -e CACHE_LOCATION=/tmp/flowdesk-test-cache web python manage.py test --verbosity 1"
+
+必须看到类似以下结果才能继续：
+
+Ran 34 tests
+OK
+
+如果测试失败，不要执行下一步切换指令。旧网站仍然会继续运行。
+
+
+十二、切换正式 Web 容器
+----------------------
+
+测试通过后运行：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose up -d web"
+
+该指令会使用新镜像重新创建 Web 容器，但不会删除 PostgreSQL 数据卷。
+
+
+十三、部署后检查
+----------------
+
+检查容器状态：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose ps"
+
+查看 Web 容器最近日志：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose logs --tail=100 web"
+
+在服务器内部检查 Django 健康接口：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "curl -I -H 'Host: commongroundmigration.duckdns.org' -H 'X-Forwarded-Proto: https' http://127.0.0.1:8000/health/"
+
+检查正式 HTTPS 网站：
+
+curl.exe -I "https://commongroundmigration.duckdns.org/"
+
+检查 HTTP 是否跳转到 HTTPS：
+
+curl.exe -I "http://commongroundmigration.duckdns.org/"
+
+对于本次感谢页修复，直接访问下面地址应该跳回咨询表单，而不是显示成功：
+
+curl.exe -I "https://commongroundmigration.duckdns.org/consultation/thank-you/"
+
+也应在浏览器中实际测试一次咨询提交和邮件接收流程。
+
+
+十四、发生问题时回滚代码
+------------------------
+
+以下指令使用第六步创建的备份恢复三个文件：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "sudo install -m 0644 /home/ubuntu/flowdesk-backup-$DeployId/tickets/views.py /opt/flowdesk/tickets/views.py && sudo install -m 0644 /home/ubuntu/flowdesk-backup-$DeployId/tickets/tests.py /opt/flowdesk/tickets/tests.py && sudo install -m 0644 /home/ubuntu/flowdesk-backup-$DeployId/templates/public/consultation_thanks.html /opt/flowdesk/templates/public/consultation_thanks.html && cd /opt/flowdesk && sudo docker compose build web && sudo docker compose up -d web"
+
+然后重新检查：
+
+ssh -i ".deploy\flowdesk_deploy_key" ubuntu@165.154.203.178 "cd /opt/flowdesk && sudo docker compose ps && sudo docker compose logs --tail=100 web"
+
+
+十五、同步 GitHub（与服务器部署是两件事）
+----------------------------------------
+
+服务器部署不会自动更新 GitHub。确认正式网站正常后，可以在本地运行：
+
+git status --short
+git add tickets/views.py tickets/tests.py templates/public/consultation_thanks.html
+git commit -m "Guard consultation thank-you page"
+git push origin main
+
+提交前再次确认没有选择 .env、数据库、SSH 私钥或授权码。
+
+
+十六、当前部署结构说明
+----------------------
+
+本地源代码：
+C:\Users\84783\Documents\New project\flowdesk
+
+服务器源代码：
+/opt/flowdesk
+
+服务器数据库：
+Docker PostgreSQL 数据卷 flowdesk_postgres_data
+
+正式 Web 服务：
+Docker 容器 flowdesk-web-1
+
+反向代理与 HTTPS：
+Nginx + Let's Encrypt
+
+正式域名：
+https://commongroundmigration.duckdns.org/
+
+本地、GitHub 和服务器不会自动同步，三者需要分别更新。

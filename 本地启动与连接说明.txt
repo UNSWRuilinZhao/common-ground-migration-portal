@@ -1,0 +1,161 @@
+Common Ground Migration 项目——本地启动与连接说明
+================================================
+
+适用系统：Windows PowerShell
+项目目录：C:\Users\84783\Documents\New project\flowdesk
+
+
+一、运行原理
+------------
+
+本地启动后，Django 会在你的电脑上运行一个开发服务器：
+
+浏览器 → http://127.0.0.1:8000/ → 本机 Django → 本地 SQLite 数据库
+
+127.0.0.1 表示当前这台电脑，不会经过 AkileCloud 云服务器，也不需要
+SSH、云服务器密码或域名。
+
+
+二、日常启动方法
+----------------
+
+1. 打开 Windows PowerShell。
+
+2. 进入项目目录：
+
+cd "C:\Users\84783\Documents\New project\flowdesk"
+
+3. 启动 Django 本地服务器：
+
+.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
+
+4. 当终端显示类似下面的内容时，表示启动成功：
+
+Starting development server at http://127.0.0.1:8000/
+
+启动后不要关闭这个 PowerShell 窗口。
+
+
+三、在浏览器中连接
+------------------
+
+主页：
+http://127.0.0.1:8000/
+
+咨询表单：
+http://127.0.0.1:8000/consultation/
+
+登录页面：
+http://127.0.0.1:8000/accounts/login/
+
+Django 管理后台：
+http://127.0.0.1:8000/admin/
+
+也可以在另一个 PowerShell 窗口运行下面的指令打开咨询页面：
+
+Start-Process "http://127.0.0.1:8000/consultation/"
+
+
+四、停止本地服务
+----------------
+
+回到正在运行 Django 的 PowerShell 窗口，按：
+
+Ctrl + C
+
+看到命令提示符重新出现后，表示本地服务已经停止。此时浏览器再次访问
+127.0.0.1:8000 会显示无法连接。
+
+
+五、.venv\Scripts\python.exe 的含义
+-----------------------------------
+
+.\                         当前文件夹
+.venv\                     当前项目的 Python 虚拟环境
+Scripts\python.exe         虚拟环境专用的 Python 程序
+
+使用这个完整路径，可以保证项目调用正确的 Python 和已经安装的 Django，
+避免误用电脑上的其他 Python 版本。
+
+
+六、首次设置或重新安装依赖
+--------------------------
+
+如果 .venv 文件夹不存在，可以依次运行：
+
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe manage.py migrate
+
+完成后再启动：
+
+.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
+
+
+七、可选：先激活虚拟环境
+------------------------
+
+可以先运行：
+
+.\.venv\Scripts\Activate.ps1
+
+命令行前面出现 (.venv) 后，启动指令可以简写成：
+
+python manage.py runserver 127.0.0.1:8000
+
+退出虚拟环境：
+
+deactivate
+
+
+八、本地数据保存位置
+--------------------
+
+本地开发默认使用：
+
+C:\Users\84783\Documents\New project\flowdesk\db.sqlite3
+
+正式服务器使用 Docker 中的 PostgreSQL。两边的用户、咨询记录和管理员账号
+不会自动同步。
+
+
+九、常见问题
+------------
+
+1. 浏览器显示“无法访问此网站”
+
+确认运行 Django 的 PowerShell 窗口仍然打开，并检查是否显示错误信息。
+
+2. 提示端口 8000 已被占用
+
+可以临时改用 8001：
+
+.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8001
+
+然后访问：
+
+http://127.0.0.1:8001/
+
+3. 修改代码后页面没有变化
+
+先按 Ctrl + Shift + R 强制刷新浏览器。如果服务没有自动重新加载，按
+Ctrl + C 停止服务，然后重新执行启动指令。
+
+4. PowerShell 不允许执行 Activate.ps1
+
+不必修改执行策略，直接使用完整指令即可：
+
+.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
+
+
+十、本地地址与正式地址的区别
+----------------------------
+
+本地测试地址：
+http://127.0.0.1:8000/
+
+正式网站地址：
+https://commongroundmigration.duckdns.org/
+
+本地修改不会自动出现在正式网站。必须另外执行服务器部署，正式网站才会
+更新。

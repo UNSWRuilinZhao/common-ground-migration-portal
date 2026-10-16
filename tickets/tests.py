@@ -1,6 +1,7 @@
 import re
 from datetime import date, timedelta
 from io import StringIO
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
@@ -94,6 +95,10 @@ class CommonGroundTests(TestCase):
         self.assertContains(response, 'maxlength="10"')
         self.assertContains(response, 'data-date-input="dmy"')
 
+    def test_consultation_thanks_requires_a_successful_submission(self):
+        response = self.client.get(reverse("consultation_thanks"))
+        self.assertRedirects(response, reverse("consultation"))
+
     def test_health_check_is_public(self):
         response = self.client.get(reverse("health"))
         self.assertEqual(response.status_code, 200)
@@ -157,6 +162,9 @@ class CommonGroundTests(TestCase):
             f"/admin/tickets/consultationrequest/{enquiry.pk}/change/",
             notification.body,
         )
+        thanks = self.client.get(reverse("consultation_thanks"))
+        self.assertContains(thanks, "Our team has been notified")
+        self.assertContains(thanks, "a confirmation email has been sent")
 
     def test_consultation_honeypot_discards_automated_submission(self):
         response = self.client.post(
@@ -172,9 +180,36 @@ class CommonGroundTests(TestCase):
             },
         )
 
-        self.assertRedirects(response, reverse("consultation_thanks"))
+        self.assertRedirects(response, reverse("home"))
         self.assertFalse(ConsultationRequest.objects.exists())
         self.assertEqual(len(mail.outbox), 0)
+
+    @override_settings(CONSULTATION_NOTIFICATION_EMAILS=["team@example.com"])
+    @patch(
+        "tickets.views.send_consultation_confirmation_email",
+        side_effect=RuntimeError("SMTP unavailable"),
+    )
+    def test_consultation_thanks_reports_confirmation_email_failure(self, _send):
+        response = self.client.post(
+            reverse("consultation"),
+            {
+                "name": "Email Failure Test",
+                "email": "email-failure@example.com",
+                "phone": "",
+                "location": "Sydney",
+                "visa_interest": Case.VisaType.OTHER,
+                "current_visa": "",
+                "visa_expiry": "",
+                "preferred_contact": ConsultationRequest.ContactMethod.EMAIL,
+                "message": "Testing accurate delivery status.",
+                "privacy_consent": "on",
+            },
+        )
+
+        self.assertRedirects(response, reverse("consultation_thanks"))
+        thanks = self.client.get(reverse("consultation_thanks"))
+        self.assertContains(thanks, "Your confirmation email is delayed")
+        self.assertNotContains(thanks, "a confirmation email has been sent")
 
     @override_settings(
         CONSULTATION_RATE_LIMIT_COUNT=1,
