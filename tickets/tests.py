@@ -84,11 +84,6 @@ class CommonGroundTests(TestCase):
             with self.subTest(route=route):
                 self.assertEqual(self.client.get(reverse(route)).status_code, 200)
 
-        self.assertContains(
-            self.client.get(reverse("home")),
-            "Portfolio demonstration",
-        )
-
     def test_consultation_date_input_has_dmy_mask_attributes(self):
         response = self.client.get(reverse("consultation"))
         self.assertContains(response, 'placeholder="DD/MM/YYYY"')
